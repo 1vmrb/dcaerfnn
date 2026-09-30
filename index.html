@@ -38,12 +38,20 @@
       }
 
       .topbar {
-        position: sticky;
+        position: fixed;
         top: 0;
+        left: 0;
+        right: 0;
         z-index: 20;
         background: rgba(245, 245, 243, 0.85);
         backdrop-filter: blur(12px);
         border-bottom: 1px solid var(--line);
+        transform: translateY(0);
+        transition: transform 0.3s ease;
+      }
+
+      .topbar.hidden {
+        transform: translateY(-100%);
       }
 
       .topbar-inner {
@@ -117,6 +125,10 @@
         background: var(--panel);
         color: var(--text);
         font-size: 0.78rem;
+      }
+
+      body {
+        padding-top: 72px;
       }
 
       .hero {
@@ -725,5 +737,38 @@
     <footer class="footer">
       <div class="container">Detection and Classification of Acoustic Environment — Minimal UI revision.</div>
     </footer>
+
+    <script>
+      let lastScrollY = 0;
+      let ticking = false;
+
+      function updateTopbarVisibility() {
+        const topbar = document.querySelector('.topbar');
+        const currentScrollY = window.scrollY;
+
+        // Show topbar when scrolling up or at the top
+        if (currentScrollY < lastScrollY) {
+          topbar.classList.remove('hidden');
+        }
+        // Hide topbar when scrolling down and not at top
+        else if (currentScrollY > lastScrollY && currentScrollY > 100) {
+          topbar.classList.add('hidden');
+        }
+        // Always show at the very top
+        else if (currentScrollY < 100) {
+          topbar.classList.remove('hidden');
+        }
+
+        lastScrollY = currentScrollY;
+        ticking = false;
+      }
+
+      window.addEventListener('scroll', () => {
+        if (!ticking) {
+          window.requestAnimationFrame(updateTopbarVisibility);
+          ticking = true;
+        }
+      });
+    </script>
   </body>
 </html>
